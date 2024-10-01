@@ -19,13 +19,16 @@ class PengumumanController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->has('search')) {
-            $pengumuman = Pengumuman::where('judul', 'LIKE', '%' . $request->search . '%')->latest()->paginate(5);
-        } else {
-            $pengumuman = Pengumuman::latest()->paginate(5);
-        }
+        return view('backend/pengumuman');
+    }
 
-        return view('alhanafiyah/pengumuman', compact('pengumuman'));
+    public function getData(Request $request)
+    {
+        // Ambil data dari database
+        $data = Pengumuman::all();
+
+        // Kembalikan data dalam format JSON
+        return response()->json(['data' => $data]);
     }
 
     /**
@@ -53,21 +56,21 @@ class PengumumanController extends Controller
 
         //validasi form
         $this->validate($request, [
-            'tanggal' => 'required|max:30',
-            'judul' => 'required|max:50',
-            'isi' => 'required|max:100',
+            'isi' => 'required|max:50',
+            'judul' => 'required|max:30',
+            'tanggal' => 'required',
         ], $message);
 
         //insert data
-
-        Pengumuman::create([
-            'tanggal' => $request->tanggal,
-            'judul' => $request->judul,
+        $pengumuman = Pengumuman::create([
             'isi' => $request->isi,
+            'judul' => $request->judul,
+            'tanggal' => $request->tanggal
         ]);
 
-        Session::flash('createPengumuman', 'Create Data Pengumuman Success!');
-        return redirect('pengumuman');
+        $pengumuman->save();
+
+        return response()->json($pengumuman);
     }
 
     /**
@@ -103,24 +106,29 @@ class PengumumanController extends Controller
     {
         $message = [
             'required' => ':attribute Belum Ada!',
-            'max' => ':attribute Maksimal :max Karakter',
+            'max' => ':attribute Maksimal :max Karakter'
         ];
 
-        //validasi form
+        // Validasi form
         $this->validate($request, [
-            'tanggal' => 'required|max:30',
-            'judul' => 'required|max:50',
-            'isi' => 'required|max:100',
+            'isi' => 'required|max:50',
+            'judul' => 'required|max:30',
+            'tanggal' => 'required',
         ], $message);
 
-        $pengumuman = Pengumuman::find($id);
-        //menyimpan ke database
-        $pengumuman->tanggal = $request->tanggal;
-        $pengumuman->judul = $request->judul;
+        // Ambil data donasi
+        $pengumuman = Pengumuman::findOrFail($request->id);
+        if (!$pengumuman) {
+            return response()->json(['error' => 'Pengumuman not found'], 404);
+        }
+
         $pengumuman->isi = $request->isi;
+        $pengumuman->judul = $request->judul;
+        $pengumuman->tanggal = $request->tanggal;
+
         $pengumuman->save();
-        Session::flash('editPengumuman', 'Edit Data Pengumuman Success!');
-        return redirect('/pengumuman');
+
+        return response()->json($pengumuman);
     }
 
     /**
@@ -136,9 +144,9 @@ class PengumumanController extends Controller
 
     public function delete($id)
     {
-        $pengumuman = Pengumuman::find($id);
+        $pengumuman = Pengumuman::findOrFail($id);
         $pengumuman->delete();
-        Session::flash('deletePengumuman', 'Delete Data Pengumuman Success!');
-        return redirect('/pengumuman');
+
+        return response()->json(['message' => 'Pengumuman deleted successfully']);
     }
 }

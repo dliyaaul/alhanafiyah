@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Profile;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -20,12 +19,16 @@ class ProfileController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->has('search')) {
-            $profile = Profile::where('judul', 'LIKE', '%' . $request->search . '%')->latest()->paginate(5);
-        } else {
-            $profile = Profile::latest()->paginate(5);
-        }
-        return view('alhanafiyah/profile', compact('profile'));
+        return view('backend/profile');
+    }
+
+    public function getData(Request $request)
+    {
+        // Ambil data dari database
+        $data = Profile::all();
+
+        // Kembalikan data dalam format JSON
+        return response()->json(['data' => $data]);
     }
 
     /**
@@ -56,7 +59,7 @@ class ProfileController extends Controller
         $this->validate($request, [
             'judul' => 'required|max:30',
             'isi' => 'required|max:100',
-            'logo' => 'mimes:png,jpg,jpeg',
+            'logo' => 'required|image|mimes:png,jpg,jpeg|max:1024',
         ], $message);
 
         //ambil parameter
@@ -66,19 +69,20 @@ class ProfileController extends Controller
         $nama_file = time() . "_" . $file->getClientOriginalName();
 
         //proses upload
-        $tujuan_upload = './admin/img/';
-        $file->move($tujuan_upload, $nama_file);
+        $tujuan_upload = 'public/img/profile/';
+        $filePath = $file->storeAs($tujuan_upload, $nama_file);
 
         //insert data
 
-        Profile::create([
+        $profile = Profile::create([
             'judul' => $request->judul,
             'isi' => $request->isi,
             'logo' => $nama_file
         ]);
 
-        Session::flash('createProfile', 'Create Data Profile Success!');
-        return redirect('profile')->with('logo', $nama_file);
+        $profile->save();
+
+        return response()->json($profile);
     }
 
     /**
@@ -118,33 +122,38 @@ class ProfileController extends Controller
             'mimes' => ':attribute Format Harus jpg/jpeg/png'
         ];
 
-        //validasi form
+        // Validasi form
         $this->validate($request, [
             'judul' => 'required|max:30',
             'isi' => 'required|max:100',
-            'logo' => 'mimes:png,jpg,jpeg',
+            'logo' => 'nullable|image|mimes:png,jpg,jpeg|max:1024', // Gambar tidak wajib diubah
         ], $message);
 
-        $profile = Profile::find($id);
-        file::delete('./admin/img/' . $profile->logo);
+        // Ambil data donasi
+        $profile = Profile::findOrFail($request->id);
+        if (!$profile) {
+            return response()->json(['error' => 'Profile not found'], 404);
+        }
 
-        //ambil parameter
-        $file = $request->file('logo');
+        if ($request->hasFile('logo')) {
+            // Hapus file lama jika ada
+            if ($profile->logo) {
+                Storage::delete('public/img/profile/' . $profile->logo);
+            }
 
-        //rename
-        $nama_file = time() . "_" . $file->getClientOriginalName();
+            // Simpan file baru
+            $file = $request->file('logo');
+            $nama_file = time() . "_" . $file->getClientOriginalName();
+            $filePath = $file->storeAs('public/img/profile/', $nama_file);
+            $profile->logo = $nama_file;
+        }
 
-        //proses upload
-        $tujuan_upload = './admin/img/';
-        $file->move($tujuan_upload, $nama_file);
-
-        //menyimpan ke database
         $profile->judul = $request->judul;
         $profile->isi = $request->isi;
-        $profile->logo = $nama_file;
+
         $profile->save();
-        Session::flash('editProfile', 'Edit Data Profile Success!');
-        return redirect('/profile')->with('logo', $nama_file);
+
+        return response()->json($profile);
     }
 
     /**
@@ -160,9 +169,9 @@ class ProfileController extends Controller
 
     public function delete($id)
     {
-        $profile = Profile::find($id);
+        $profile = Profile::findOrFail($id);
         $profile->delete();
-        Session::flash('deleteProfile', 'Delete Data Profile Success!');
-        return redirect('/profile');
+
+        return response()->json(['message' => 'Profile deleted successfully']);
     }
 }

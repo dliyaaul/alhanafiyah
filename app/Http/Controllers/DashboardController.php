@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Beranda;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class DashboardController extends Controller
 {
@@ -20,12 +20,8 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->has('search')) {
-            $beranda = Beranda::where('judul', 'LIKE', '%' . $request->search . '%')->latest()->paginate(3);
-        } else {
-            $beranda = Beranda::latest()->paginate(3);
-        }
-        return view('alhanafiyah/dashboard', compact('beranda'));
+        $beranda = Beranda::all();
+        return view('backend/dashboard', compact('beranda'));
     }
 
     /**
@@ -52,32 +48,31 @@ class DashboardController extends Controller
             'mimes' => ':attribute Format Harus jpg/jpeg/png'
         ];
 
-        //validasi form
+        // Validasi form
         $this->validate($request, [
             'judul' => 'required|max:30',
             'isi' => 'required|max:100',
-            'gambar' => 'mimes:png,jpg,jpeg',
+            'gambar' => 'required|image|mimes:png,jpg,jpeg|max:1024',
         ], $message);
 
-        //ambil parameter
+        // Ambil parameter
         $file = $request->file('gambar');
 
-        //rename
+        // Rename file
         $nama_file = time() . "_" . $file->getClientOriginalName();
 
-        //proses upload
-        $tujuan_upload = './admin/img/';
-        $file->move($tujuan_upload, $nama_file);
+        // Proses upload ke storage
+        $tujuan_upload = 'public/img';
+        $filePath = $file->storeAs($tujuan_upload, $nama_file);
 
-        //insert data
-
+        // Insert data
         Beranda::create([
             'judul' => $request->judul,
             'isi' => $request->isi,
             'gambar' => $nama_file
         ]);
 
-        Session::flash('createDashboard', 'Create Data Dashboard Success!');
+        Session::flash('success', 'Create Data Dashboard Success!');
         return redirect('dashboard')->with('gambar', $nama_file);
     }
 
@@ -118,33 +113,35 @@ class DashboardController extends Controller
             'mimes' => ':attribute Format Harus jpg/jpeg/png'
         ];
 
-        //validasi form
+        // Validasi form
         $this->validate($request, [
             'judul' => 'required|max:30',
             'isi' => 'required|max:100',
-            'gambar' => 'mimes:png,jpg,jpeg',
+            'gambar' => 'nullable|image|mimes:png,jpg,jpeg|max:1024', // Gambar tidak wajib diubah
         ], $message);
 
+        // Ambil data donasi
         $beranda = Beranda::find($id);
-        file::delete('./admin/img/' . $beranda->gambar);
-
-        //ambil parameter
-        $file = $request->file('gambar');
-
-        //rename
-        $nama_file = time() . "_" . $file->getClientOriginalName();
-
-        //proses upload
-        $tujuan_upload = './admin/img/';
-        $file->move($tujuan_upload, $nama_file);
-
-        //menyimpan ke database
         $beranda->judul = $request->judul;
         $beranda->isi = $request->isi;
-        $beranda->gambar = $nama_file;
+
+        if ($request->hasFile('gambar')) {
+            // Hapus file lama jika ada
+            if ($beranda->gambar) {
+                Storage::delete('public/img/' . $beranda->gambar);
+            }
+
+            // Simpan file baru
+            $file = $request->file('gambar');
+            $nama_file = time() . "_" . $file->getClientOriginalName();
+            $filePath = $file->storeAs('public/img', $nama_file);
+            $beranda->gambar = $nama_file;
+        }
+
         $beranda->save();
-        Session::flash('editDashboard', 'Edit Data Dashboard Success!');
-        return redirect('/dashboard')->with('gambar', $nama_file);
+
+        Session::flash('success', 'Update Data Dashboard Success!');
+        return redirect('dashboard')->with('gambar', $beranda->gambar);
     }
 
     /**
@@ -160,9 +157,9 @@ class DashboardController extends Controller
 
     public function delete($id)
     {
-        $beranda = Beranda::find($id);
+        $beranda = Beranda::findOrFail($id);
         $beranda->delete();
-        Session::flash('deleteDashboard', 'Delete Data Dashboard Success!');
-        return redirect('/dashboard');
+
+        return response()->json(['success' => true]);
     }
 }
