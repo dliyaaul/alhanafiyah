@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\GambarController;
@@ -78,3 +79,6 @@ Route::delete('/deleteSaldoWakaf/{id}', [SaldoWakafController::class, 'delete'])
 
 // routes/web.php
 Route::get('/server-time', [TimeController::class, 'getServerTime']);
+
+// Logout
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

@@ -57,7 +57,7 @@ class ProfileController extends Controller
 
         //validasi form
         $this->validate($request, [
-            'judul' => 'required|max:30',
+            'judul' => 'required|max:35',
             'isi' => 'required|max:100',
             'logo' => 'required|image|mimes:png,jpg,jpeg|max:1024',
         ], $message);
@@ -124,7 +124,7 @@ class ProfileController extends Controller
 
         // Validasi form
         $this->validate($request, [
-            'judul' => 'required|max:30',
+            'judul' => 'required|max:35',
             'isi' => 'required|max:100',
             'logo' => 'nullable|image|mimes:png,jpg,jpeg|max:1024', // Gambar tidak wajib diubah
         ], $message);
@@ -138,7 +138,10 @@ class ProfileController extends Controller
         if ($request->hasFile('logo')) {
             // Hapus file lama jika ada
             if ($profile->logo) {
-                Storage::delete('public/img/profile/' . $profile->logo);
+                // Hapus logo dari storage jika ada
+                if (Storage::exists('public/img/profile/' . $profile->logo)) {
+                    Storage::delete('public/img/profile/' . $profile->logo);
+                }
             }
 
             // Simpan file baru
@@ -170,6 +173,15 @@ class ProfileController extends Controller
     public function delete($id)
     {
         $profile = Profile::findOrFail($id);
+
+        // Periksa apakah kegiatan memiliki gambar yang disimpan
+        if ($profile->logo) {
+            // Hapus logo dari storage jika ada
+            if (Storage::exists('public/img/profile/' . $profile->logo)) {
+                Storage::delete('public/img/profile/' . $profile->logo);
+            }
+        }
+
         $profile->delete();
 
         return response()->json(['message' => 'Profile deleted successfully']);

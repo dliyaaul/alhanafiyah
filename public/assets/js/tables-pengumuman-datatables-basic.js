@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
                             message: "Title field is required",
                         },
                         stringLength: {
-                            max: 50,
+                            max: 35,
                             message:
                                 "The Title must be more than 1 and less than 50 characters long",
                         },
@@ -124,6 +124,8 @@ document.addEventListener("DOMContentLoaded", function (e) {
 
 // datatable (jquery)
 $(function () {
+    const notyf = new Notyf(); // Inisialisasi notyf
+
     var dt_basic_pengumuman_table = $(".datatables-basic-pengumuman"),
         // dt_basic_pengumuman_table = $(".datatables-basic-pengumuman"),
         // dt_row_grouping_table = $('.dt-row-grouping'),
@@ -572,11 +574,27 @@ $(function () {
                 // Hide offcanvas using javascript method
                 offCanvasEl.hide();
                 resetForm();
+
+                if (id) {
+                    notyf.success({
+                        message: "Success Update Data Pengumuman",
+                        duration: 4000,
+                    });
+                } else {
+                    notyf.success({
+                        message: "Success Added Data Pengumuman",
+                        duration: 4000,
+                    });
+                }
             },
             error: function (xhr, status, error) {
                 console.error("Status:", status);
                 console.error("Error:", error);
                 console.error("Response:", xhr.responseText);
+                notyf.error({
+                    message: "Failed to Added/Update Data Pengumuman",
+                    duration: 4000, // durasi 5 detik
+                });
             },
         });
     });
@@ -597,11 +615,17 @@ $(function () {
                 },
                 success: function (response) {
                     row.remove().draw();
-                    alert("Pengumuman deleted successfully");
+                    notyf.success({
+                        message: "Success Delete Data Pengumuman",
+                        duration: 4000, // durasi 5 detik
+                    });
                 },
                 error: function (xhr, status, error) {
                     console.error("Error:", error);
-                    alert("Failed to delete pengumuman");
+                    notyf.error({
+                        message: "Success Delete Data Pengumuman",
+                        duration: 4000, // durasi 5 detik
+                    });
                 },
             });
         }

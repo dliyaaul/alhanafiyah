@@ -2,7 +2,7 @@
  * DataTables Basic
  */
 
-"use strict";
+("use strict");
 
 let fv, offCanvasEl, label;
 document.addEventListener("DOMContentLoaded", function (e) {
@@ -57,9 +57,9 @@ document.addEventListener("DOMContentLoaded", function (e) {
                             message: "Title field is required",
                         },
                         stringLength: {
-                            max: 25,
+                            max: 35,
                             message:
-                                "The Content must be more than 1 and less than 25 characters long",
+                                "The Content must be more than 1 and less than 35 characters long",
                         },
                     },
                 },
@@ -123,6 +123,8 @@ document.addEventListener("DOMContentLoaded", function (e) {
 
 // datatable (jquery)
 $(function () {
+    const notyf = new Notyf(); // Inisialisasi notyf
+
     var dt_basic_profile_table = $(".datatables-basic-profile"),
         // dt_basic_kegiatan_table = $(".datatables-basic-kegiatan"),
         // dt_row_grouping_table = $('.dt-row-grouping'),
@@ -557,10 +559,25 @@ $(function () {
                 // Hide offcanvas using javascript method
                 offCanvasEl.hide();
                 resetForm();
+                if (id) {
+                    notyf.success({
+                        message: "Success Update Data Profile",
+                        duration: 4000,
+                    });
+                } else {
+                    notyf.success({
+                        message: "Success Added Data Profile",
+                        duration: 4000,
+                    });
+                }
             },
             error: function (xhr, status, error) {
                 // Menangani error
                 console.error("Error:", error);
+                notyf.error({
+                    message: "Failed to Added/Update Data Profile",
+                    duration: 4000, // durasi 5 detik
+                });
             },
         });
     });
@@ -581,11 +598,17 @@ $(function () {
                 },
                 success: function (response) {
                     row.remove().draw();
-                    alert("Profile deleted successfully");
+                    notyf.success({
+                        message: "Success Delete Data Profile",
+                        duration: 4000, // durasi 5 detik
+                    });
                 },
                 error: function (xhr, status, error) {
                     console.error("Error:", error);
-                    alert("Failed to delete profile");
+                    notyf.error({
+                        message: "Failed to Delete Data Profile",
+                        duration: 4000, // durasi 5 detik
+                    });
                 },
             });
         }

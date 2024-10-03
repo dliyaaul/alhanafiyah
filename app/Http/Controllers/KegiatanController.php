@@ -58,7 +58,7 @@ class KegiatanController extends Controller
         //validasi form
         $this->validate($request, [
             'keterangan' => 'required|max:50',
-            'tempat' => 'required|max:30',
+            'tempat' => 'required|max:50',
             'tanggal' => 'required',
             'gambar' => 'required|image|mimes:png,jpg,jpeg|max:1024',
         ], $message);
@@ -127,7 +127,7 @@ class KegiatanController extends Controller
         // Validasi form
         $this->validate($request, [
             'keterangan' => 'required|max:50',
-            'tempat' => 'required|max:30',
+            'tempat' => 'required|max:50',
             'tanggal' => 'required',
             'gambar' => 'required|image|mimes:png,jpg,jpeg|max:1024',
         ], $message);

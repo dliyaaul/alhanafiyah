@@ -2,7 +2,7 @@
 
 @section('vendorCSS')
     <link rel="stylesheet" href="../../assets/vendor/libs/@form-validation/form-validation.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/sweetalert2/sweetalert2.css" />
+    {{-- <link rel="stylesheet" href="../../assets/vendor/libs/sweetalert2/sweetalert2.css" /> --}}
     <link rel="stylesheet" href="../../assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
     <link rel="stylesheet" href="../../assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
     <link rel="stylesheet" href="../../assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css" />
@@ -181,21 +181,11 @@
     <script src="../../assets/vendor/libs/@form-validation/popular.js"></script>
     <script src="../../assets/vendor/libs/@form-validation/bootstrap5.js"></script>
     <script src="../../assets/vendor/libs/@form-validation/auto-focus.js"></script>
-    <script src="../../assets/vendor/libs/sweetalert2/sweetalert2.js"></script>
+    {{-- <script src="../../assets/vendor/libs/sweetalert2/sweetalert2.js"></script> --}}
 @endsection
 
 @section('pageJs')
-    <script src="../../assets/js/extended-ui-sweetalert2.js"></script>
+    {{-- <script src="../../assets/js/extended-ui-sweetalert2.js"></script> --}}
     <script src="../../assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
-    <script src="../../assets/js/tables-backend-datatables-basic.js"></script>
-
-    <script>
-        $(document).ready(function() {
-            setTimeout(function() {
-                $('#alert').fadeOut('slow', function() {
-                    $(this).remove();
-                });
-            }, 5000); // 5000 ms = 5 detik
-        });
-    </script>
+    <script src="../../assets/js/tables-profile-datatables-basic.js"></script>
 @endsection

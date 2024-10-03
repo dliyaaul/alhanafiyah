@@ -601,17 +601,24 @@ $(function () {
                 offCanvasEl.hide();
                 resetForm();
 
-                notyf.success({
-                    message: "Success Added Data",
-                    duration: 4000,
-                });
+                if (id) {
+                    notyf.success({
+                        message: "Success Update Data Profile",
+                        duration: 4000,
+                    });
+                } else {
+                    notyf.success({
+                        message: "Success Added Data Profile",
+                        duration: 4000,
+                    });
+                }
             },
             error: function (xhr, status, error) {
                 console.error("Status:", status);
                 console.error("Error:", error);
                 console.error("Response:", xhr.responseText);
                 notyf.error({
-                    message: "Failed to Added Data",
+                    message: "Failed to Added/Update Data Kegiatan",
                     duration: 4000, // durasi 5 detik
                 });
             },
@@ -636,7 +643,7 @@ $(function () {
                     row.remove().draw();
                     // Notifikasi sukses menggunakan Notyf
                     notyf.success({
-                        message: "Success Delete Data",
+                        message: "Success Delete Data Kegiatan",
                         duration: 4000,
                     });
                 },
@@ -644,7 +651,7 @@ $(function () {
                     console.error("Error:", error);
                     // Notifikasi error menggunakan Notyf
                     notyf.error({
-                        message: "Failed to delete kegiatan",
+                        message: "Failed to Delete Data Kegiatan",
                         duration: 4000, // durasi 5 detik
                     });
                 },

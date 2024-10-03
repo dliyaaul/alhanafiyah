@@ -56,8 +56,8 @@ class PengumumanController extends Controller
 
         //validasi form
         $this->validate($request, [
-            'isi' => 'required|max:50',
-            'judul' => 'required|max:30',
+            'isi' => 'required|max:100',
+            'judul' => 'required|max:35',
             'tanggal' => 'required',
         ], $message);
 
@@ -111,8 +111,8 @@ class PengumumanController extends Controller
 
         // Validasi form
         $this->validate($request, [
-            'isi' => 'required|max:50',
-            'judul' => 'required|max:30',
+            'isi' => 'required|max:100',
+            'judul' => 'required|max:35',
             'tanggal' => 'required',
         ], $message);
 

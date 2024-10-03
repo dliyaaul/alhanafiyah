@@ -3,7 +3,7 @@
 @section('vendorCSS')
     <link rel="stylesheet"
         href="../../assets/vendor/libs/@form-validation/form-validation.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/sweetalert2/sweetalert2.css" />
+    {{-- <link rel="stylesheet" href="../../assets/vendor/libs/sweetalert2/sweetalert2.css" /> --}}
 @endsection
 
 @section('pageCSS')
@@ -96,16 +96,6 @@
 
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
-        @if (session('success'))
-        <div class="alert alert-success alert-dismissible d-flex align-items-center" id="alert" role="alert">
-            <span class="alert-icon text-success me-2">
-                <i class="ti ti-check ti-xs"></i>
-            </span>
-
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div> @endif
-
         <h4 class="py-3
         mb-4">
     Dashboard
@@ -261,12 +251,12 @@
     <script src="../../assets/vendor/libs/@form-validation/popular.js"></script>
     <script src="../../assets/vendor/libs/@form-validation/bootstrap5.js"></script>
     <script src="../../assets/vendor/libs/@form-validation/auto-focus.js"></script>
-    <script src="../../assets/vendor/libs/sweetalert2/sweetalert2.js"></script>
+    {{-- <script src="../../assets/vendor/libs/sweetalert2/sweetalert2.js"></script> --}}
 @endsection
 
 @section('pageJs')
-    <script src="../../assets/js/form-validation.js"></script>
-    <script src="../../assets/js/extended-ui-sweetalert2.js"></script>
+    {{-- <script src="../../assets/js/form-validation.js"></script>
+    <script src="../../assets/js/extended-ui-sweetalert2.js"></script> --}}
 
     <script>
         $(document).ready(function() {
